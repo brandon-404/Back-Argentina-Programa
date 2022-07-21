@@ -35,9 +35,9 @@ public class UsersImplement implements IUsersService{
         return usersDTO; 
     }
     @Override
-    public UsersDTO findByUsersname(String username) {
+    public Users findByUsersname(String username) {
         Users users = this.usersRepo.findByUsername(username).orElse(null);
-        return users == null ? null : Helpers.modelMapper().map(users, UsersDTO.class);
+        return users;
     }
 
     @Override

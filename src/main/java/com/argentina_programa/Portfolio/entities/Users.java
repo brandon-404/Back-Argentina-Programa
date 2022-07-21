@@ -44,6 +44,8 @@ public class Users  implements Serializable{
     private String img_perfil;
     @Column (name = "img_portada")
     private String img_portada;
+    @Column (name = "token")
+    private String token;
     
     @Column(name = "ceateAt")
     @Temporal(TemporalType.TIMESTAMP)

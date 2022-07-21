@@ -4,6 +4,7 @@ package com.argentina_programa.Portfolio.services.interfaces;
 
 import com.argentina_programa.Portfolio.dto.users.UserRequest;
 import com.argentina_programa.Portfolio.dto.users.UsersDTO;
+import com.argentina_programa.Portfolio.entities.Users;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 public interface IUsersService {
     List<UsersDTO> findAll();
     
-    UsersDTO findByUsersname(String username);
+    Users findByUsersname(String username);
     
     UsersDTO findByUserID(int userId);   
     
