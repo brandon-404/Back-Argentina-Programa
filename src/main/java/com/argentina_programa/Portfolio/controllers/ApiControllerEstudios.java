@@ -34,6 +34,7 @@ public class ApiControllerEstudios {
     @Autowired
     private IEstudiosService EstuServ;
     
+    
      @PostConstruct
     protected void init (){
         secret = Base64.getEncoder().encodeToString(secret.getBytes());
