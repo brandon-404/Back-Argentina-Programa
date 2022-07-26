@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import io.jsonwebtoken.*;
+import com.argentina_programa.Portfolio.utils.exceptions.ApiUnauthorizazed;
 
 /**
  *
@@ -42,7 +44,7 @@ public class ApiControllerSocial {
         return ResponseEntity.ok(this.socialS.findAll());
     }
     @GetMapping (value = "/by/{id}")
-    public ResponseEntity <Object> findById(@PathVariable int id){
+    public ResponseEntity <Object> findById(@PathVariable  int id){
         return ResponseEntity.ok(this.socialS.findBySocialID(id));
     }
     @GetMapping(value = "/by/social_name/{red_social}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -50,25 +52,61 @@ public class ApiControllerSocial {
         return ResponseEntity.ok(this.socialS.findByRedSocial(red_social));
     }
     @PostMapping ( value = "/save", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity <Object> save (@RequestBody Social estudio, @RequestHeader("Authorization") String token){
+    public ResponseEntity <Object> save (@RequestBody Social estudio, @RequestHeader("Authorization") String token) throws ApiUnauthorizazed{
+       try{ 
         boolean bandera = getAuthentication(token);
         if(bandera)
             this.socialS.save(estudio);
         return ResponseEntity.ok(bandera ? Boolean.TRUE: Boolean.FALSE);
+        }catch( MalformedJwtException e ){
+            throw new ApiUnauthorizazed("JWT mal formado");
+        }catch (UnsupportedJwtException e){
+            throw new ApiUnauthorizazed ("token no soportado");
+        }catch (ExpiredJwtException e){
+            throw new ApiUnauthorizazed("token expirado");
+        }catch (IllegalArgumentException e){
+            throw new ApiUnauthorizazed ("token vacío");
+        }catch (SignatureException e){
+            throw new ApiUnauthorizazed ("fail en la firma");
+        }
     }
     @DeleteMapping ( value = "/{id}/delete")
-    public ResponseEntity <Object> delete ( @PathVariable int id, @RequestHeader("Authorization") String token){
+    public ResponseEntity <Object> delete ( @PathVariable int id, @RequestHeader("Authorization") String token)throws ApiUnauthorizazed{
+        try{ 
         boolean bandera = getAuthentication(token);
         if(bandera)
             this.socialS.deleteById(id);
         return ResponseEntity.ok(bandera ? Boolean.TRUE: Boolean.FALSE);
+        }catch( MalformedJwtException e ){
+            throw new ApiUnauthorizazed("JWT mal formado");
+        }catch (UnsupportedJwtException e){
+            throw new ApiUnauthorizazed ("token no soportado");
+        }catch (ExpiredJwtException e){
+            throw new ApiUnauthorizazed("token expirado");
+        }catch (IllegalArgumentException e){
+            throw new ApiUnauthorizazed ("token vacío");
+        }catch (SignatureException e){
+            throw new ApiUnauthorizazed ("fail en la firma");
+        }
     }
     @PostMapping (value = "/{id}/update")
-    public ResponseEntity <Object> update ( @RequestBody Social estudio,@PathVariable int id,@RequestHeader("Authorization") String token){
+    public ResponseEntity <Object> update ( @RequestBody Social estudio,@PathVariable int id,@RequestHeader("Authorization") String token)throws ApiUnauthorizazed{
+        try{ 
         boolean bandera = getAuthentication(token);
         if(bandera)
             this.socialS.update(estudio, id);
         return ResponseEntity.ok(bandera ? Boolean.TRUE: Boolean.FALSE);
+        }catch( MalformedJwtException e ){
+            throw new ApiUnauthorizazed("JWT mal formado");
+        }catch (UnsupportedJwtException e){
+            throw new ApiUnauthorizazed ("token no soportado");
+        }catch (ExpiredJwtException e){
+            throw new ApiUnauthorizazed("token expirado");
+        }catch (IllegalArgumentException e){
+            throw new ApiUnauthorizazed ("token vacío");
+        }catch (SignatureException e){
+            throw new ApiUnauthorizazed ("fail en la firma");
+        }
     }
         private boolean getAuthentication (String token){
         String user  ="";

@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.jsonwebtoken.*;
+import com.argentina_programa.Portfolio.utils.exceptions.ApiUnauthorizazed;
 
 /**
  *
@@ -46,25 +48,61 @@ public class ApiControllerEstudios {
         return ResponseEntity.ok(this.EstuServ.findByEstudiosID(id));
     }
     @PostMapping ( value = "/save", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity <Object> save (@RequestBody Estudios estudio, @RequestHeader("Authorization") String token){
+    public ResponseEntity <Object> save (@RequestBody Estudios estudio, @RequestHeader("Authorization") String token)throws ApiUnauthorizazed{
+        try{ 
         boolean bandera = getAuthentication(token);
         if(bandera)
             this.EstuServ.save(estudio);
         return ResponseEntity.ok(bandera ? Boolean.TRUE: Boolean.FALSE);
+         }catch( MalformedJwtException e ){
+            throw new ApiUnauthorizazed("JWT mal formado");
+        }catch (UnsupportedJwtException e){
+            throw new ApiUnauthorizazed ("token no soportado");
+        }catch (ExpiredJwtException e){
+            throw new ApiUnauthorizazed("token expirado");
+        }catch (IllegalArgumentException e){
+            throw new ApiUnauthorizazed ("token vacío");
+        }catch (SignatureException e){
+            throw new ApiUnauthorizazed ("fail en la firma");
+        }
     }
     @DeleteMapping ( value = "/{id}/delete")
-    public ResponseEntity <Object> delete ( @PathVariable int id, @RequestHeader("Authorization") String token){
+    public ResponseEntity <Object> delete ( @PathVariable int id, @RequestHeader("Authorization") String token)throws ApiUnauthorizazed{
+        try{ 
         boolean bandera = getAuthentication(token);
         if(bandera)
             this.EstuServ.deleteById(id);
         return ResponseEntity.ok(bandera ? Boolean.TRUE: Boolean.FALSE);
+         }catch( MalformedJwtException e ){
+            throw new ApiUnauthorizazed("JWT mal formado");
+        }catch (UnsupportedJwtException e){
+            throw new ApiUnauthorizazed ("token no soportado");
+        }catch (ExpiredJwtException e){
+            throw new ApiUnauthorizazed("token expirado");
+        }catch (IllegalArgumentException e){
+            throw new ApiUnauthorizazed ("token vacío");
+        }catch (SignatureException e){
+            throw new ApiUnauthorizazed ("fail en la firma");
+        }
     }
     @PostMapping (value = "/{id}/update")
-    public ResponseEntity <Object> update ( @RequestBody Estudios estudio,@PathVariable int id,@RequestHeader("Authorization") String token){
+    public ResponseEntity <Object> update ( @RequestBody Estudios estudio,@PathVariable int id,@RequestHeader("Authorization") String token)throws ApiUnauthorizazed{
+        try{ 
         boolean bandera = getAuthentication(token);
         if(bandera)
             this.EstuServ.update(estudio, id);
         return ResponseEntity.ok(bandera ? Boolean.TRUE: Boolean.FALSE);
+         }catch( MalformedJwtException e ){
+            throw new ApiUnauthorizazed("JWT mal formado");
+        }catch (UnsupportedJwtException e){
+            throw new ApiUnauthorizazed ("token no soportado");
+        }catch (ExpiredJwtException e){
+            throw new ApiUnauthorizazed("token expirado");
+        }catch (IllegalArgumentException e){
+            throw new ApiUnauthorizazed ("token vacío");
+        }catch (SignatureException e){
+            throw new ApiUnauthorizazed ("fail en la firma");
+        }
     }
       private boolean getAuthentication (String token){
         String user  ="";

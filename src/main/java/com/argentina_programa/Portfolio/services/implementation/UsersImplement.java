@@ -59,12 +59,6 @@ public class UsersImplement implements IUsersService{
              if(!userR.getName().isEmpty()){
                 user.setName(userR.getName());
              }
-            if(!userR.getUsername().isEmpty()){
-              user.setUsername(userR.getUsername());
-            }
-            if(!userR.getPassword().isEmpty()){
-              user.setPassword(BCrypt.hashpw(userR.getPassword(), BCrypt.gensalt()));  
-            }
              if(!userR.getCorreo().isEmpty()){
               user.setCorreo(userR.getCorreo());
             }

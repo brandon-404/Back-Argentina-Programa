@@ -27,6 +27,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.argentina_programa.Portfolio.entities.Token;
+import io.jsonwebtoken.*;
+import com.argentina_programa.Portfolio.utils.exceptions.ApiUnauthorizazed;
+
 
 
 /**
@@ -53,28 +56,66 @@ public class ApiControllerUsers {
     }
     
      @PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_VALUE)
-     public ResponseEntity<Object> saveUser(@RequestBody UserRequest request, @RequestHeader("Authorization") String token) throws ApiUnprocessableEntity{
+     public ResponseEntity<Object> saveUser(@RequestBody UserRequest request, @RequestHeader("Authorization") String token) throws ApiUnprocessableEntity, ApiUnauthorizazed{
+         try{ 
          boolean bandera = getAuthentication(token);
          if(bandera){   
             this.userValidator.validator(request);
             this.UService.save(request);
          }
          return ResponseEntity.ok(bandera ? Boolean.TRUE: Boolean.FALSE);
+        }catch( MalformedJwtException e ){
+            throw new ApiUnauthorizazed("JWT mal formado");
+        }catch (UnsupportedJwtException e){
+            throw new ApiUnauthorizazed ("token no soportado");
+        }catch (ExpiredJwtException e){
+            throw new ApiUnauthorizazed("token expirado");
+        }catch (IllegalArgumentException e){
+            throw new ApiUnauthorizazed ("token vacío");
+        }catch (SignatureException e){
+            throw new ApiUnauthorizazed ("fail en la firma");
+        }
      }
      
      @DeleteMapping( value = "/{userId}/delete")
-     public ResponseEntity<Object> deleteUser(@PathVariable int userId, @RequestHeader("Authorization") String token){
+     public ResponseEntity<Object> deleteUser(@PathVariable int userId, @RequestHeader("Authorization") String token)throws ApiUnauthorizazed{
+         try{ 
          boolean bandera = getAuthentication(token);
          if(bandera)
             this.UService.deleteById(userId);
          return ResponseEntity.ok(bandera ? Boolean.TRUE: Boolean.FALSE);
+         }catch( MalformedJwtException e ){
+            throw new ApiUnauthorizazed("JWT mal formado");
+        }catch (UnsupportedJwtException e){
+            throw new ApiUnauthorizazed ("token no soportado");
+        }catch (ExpiredJwtException e){
+            throw new ApiUnauthorizazed("token expirado");
+        }catch (IllegalArgumentException e){
+            throw new ApiUnauthorizazed ("token vacío");
+        }catch (SignatureException e){
+            throw new ApiUnauthorizazed ("fail en la firma");
+        }
      }
      @PutMapping(value = "/{userId}/update")
-     public ResponseEntity<Object> updateUser (@RequestBody UserRequest request, @PathVariable int userId, @RequestHeader("Authorization") String token){
+     public ResponseEntity<Object> updateUser (@RequestBody UserRequest request, @PathVariable int userId, @RequestHeader("Authorization") String token) throws ApiUnauthorizazed{
+        try{ 
         boolean bandera = getAuthentication(token);
-        if(bandera)
-         this.UService.update(request, userId);   
+        
+        if(bandera){
+         this.UService.update(request, userId);
+        }
         return ResponseEntity.ok(bandera ? Boolean.TRUE: Boolean.FALSE);
+        }catch( MalformedJwtException e ){
+            throw new ApiUnauthorizazed("JWT mal formado");
+        }catch (UnsupportedJwtException e){
+            throw new ApiUnauthorizazed ("token no soportado");
+        }catch (ExpiredJwtException e){
+            throw new ApiUnauthorizazed("token expirado");
+        }catch (IllegalArgumentException e){
+            throw new ApiUnauthorizazed ("token vacío");
+        }catch (SignatureException e){
+            throw new ApiUnauthorizazed ("fail en la firma");
+        }
     }
     @PostMapping(value = "/loggin", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> Loggin (@RequestBody UserRequest request){
@@ -102,6 +143,7 @@ public class ApiControllerUsers {
     }
      private boolean getAuthentication (String token){
         String user  ="";
+        
         if (token != null){
             user = Jwts.parser()
                     .setSigningKey(secret)
